@@ -2,11 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Reconstruir el sitio estático de galletas sobre Astro 6 + Tailwind v4, con rediseño premium cálido-artesanal, multipágina y sin footer, conservando el flujo de pedido por WhatsApp.
+**Goal:** Reconstruir el sitio estático de galletas sobre Astro 5 + Tailwind v4, con rediseño premium cálido-artesanal, multipágina y sin footer, conservando el flujo de pedido por WhatsApp.
+
+> **Nota de ejecución (Task 1):** se usa **Astro 5.18.x** en lugar de Astro 6. La 6.x trae el bundler `rolldown-vite`, incompatible con `@tailwindcss/vite` 4.3 (error `Missing field tsconfigPaths`). Lee cualquier mención a "Astro 6" más abajo como "Astro 5".
 
 **Architecture:** Astro con componentes `.astro`; datos de las 3 cajas y la config de marca centralizados y tipados; la lógica del pedido (cálculo, validación, mensaje WhatsApp) se extrae a funciones puras testeables con Vitest. Estilos con Tailwind v4: **tokens en `@theme` + clases de componente con `@apply`** (portadas y refinadas desde el `styles.css` actual) + utilidades donde convenga. Esto preserva el markup semántico existente y permite materializar el rediseño premium desde un punto central.
 
-**Tech Stack:** Astro 6.4.x · Tailwind CSS 4.3.x (`@tailwindcss/vite`) · TypeScript · Vitest 4.x · Node 24.
+**Tech Stack:** Astro 5.18.x · Tailwind CSS 4.3.x (`@tailwindcss/vite`) · TypeScript · Vitest 4.x · Node 24.
 
 ---
 
@@ -48,7 +50,7 @@ galletas/
 
 ---
 
-### Task 1: Scaffold Astro 6 + Tailwind v4 + reorganización de archivos
+### Task 1: Scaffold Astro 5 + Tailwind v4 + reorganización de archivos
 
 **Files:**
 - Create: `package.json`, `astro.config.mjs`, `tsconfig.json`, `src/pages/index.astro`, `src/styles/global.css`
@@ -86,7 +88,7 @@ Expected: `git status` muestra los archivos renombrados a `_legacy/` y `public/`
     "test": "vitest run"
   },
   "dependencies": {
-    "astro": "^6.4.4"
+    "astro": "^5.18.2"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.0",
