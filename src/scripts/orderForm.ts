@@ -30,7 +30,7 @@ export function initOrderForm(): void {
       const radio = c.querySelector<HTMLInputElement>('input');
       if (radio) radio.checked = isSelected;
       if (isSelected) {
-        form.style.setProperty('--accent-ink', box.accent);
+        form!.style.setProperty('--accent-ink', box.accent);
       }
     });
 
