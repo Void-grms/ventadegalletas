@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ValueCard from '../components/ValueCard.astro';
+---
+<BaseLayout title="Por qué nosotros — Galletas" description="Galletas hechas a mano con ingredientes de verdad, recién horneadas y listas para regalar." page="nosotros">
+  <main class="page page-center why" style="background:transparent;border:none">
+    <div class="wrap why-grid">
+      <div class="why-visual reveal">
+        <div class="why-img">
+          <div class="why-stage"><img src="/assets/box-grande.png" alt="Caja Grande de galletas artesanales" /></div>
+        </div>
+        <div class="why-stamp"><img src="/assets/logo.png" alt="Sello Galletas" /></div>
+      </div>
+      <div class="why-copy">
+        <span class="eyebrow reveal">Por qué elegirnos</span>
+        <h1 class="reveal d1" style="font-size:clamp(2rem,4.4vw,3.2rem);margin:16px 0 18px">No es solo una galleta.<br>Es un detalle hecho con amor.</h1>
+        <p class="lead reveal d1">Cada caja se hornea con ingredientes de verdad y se arma a mano, una por una. Sin conservantes raros, sin atajos — solo galletas ricas, frescas y listas para alegrar el día.</p>
+        <div class="values">
+          <div class="reveal d1">
+            <ValueCard title="Hechas con amor" text="Cada lote se prepara a mano, con cariño y paciencia.">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.5C.8 9.6 2.3 6 5.5 6 7.5 6 9 7.5 12 10c3-2.5 4.5-4 6.5-4 3.2 0 4.7 3.6 3 6.5C19 16.65 12 21 12 21z"/></svg>
+            </ValueCard>
+          </div>
+          <div class="reveal d2">
+            <ValueCard title="Recién horneadas" text="Frescura del día — nunca galletas que llevan semanas en un anaquel.">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="14" cy="9" r="1" fill="currentColor"/><circle cx="13" cy="14" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/></svg>
+            </ValueCard>
+          </div>
+          <div class="reveal d2">
+            <ValueCard title="Listas para regalar" text="Presentación bonita en caja con etiqueta — un detalle que enamora.">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18v13H3zM3 7l3-4h12l3 4M12 7v13"/></svg>
+            </ValueCard>
+          </div>
+          <div class="reveal d3">
+            <ValueCard title="Sabores que gustan" text="Clásicas de vainilla y de chocolate — o pide una mezcla de ambas.">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8c0-1 1-2 2-2h10c1 0 2 1 2 2v1H5zM5 9l1 9c.1 1 1 2 2 2h8c1 0 1.9-1 2-2l1-9M9 6V4M15 6V4"/></svg>
+            </ValueCard>
+          </div>
+        </div>
+        <div style="margin-top:32px">
+          <a class="btn btn-lg" href="/pedir">Quiero mi caja</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
