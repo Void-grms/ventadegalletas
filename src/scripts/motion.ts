@@ -2,26 +2,45 @@
  * motion.ts — Animaciones globales portadas de _legacy/app.js
  * (reveal on scroll, entrada del hero, migas flotantes, parallax, tilt 3D)
  * NO incluye lógica del formulario de pedido (va en otra tarea).
+ *
+ * ClientRouter (View Transitions) re-ejecuta initMotion() en cada
+ * `astro:page-load`. Para no acumular listeners ni loops de rAF entre
+ * navegaciones, cada init aborta el anterior (AbortController), cancela el
+ * frame del parallax y desconecta el IntersectionObserver previo.
  */
 
+let controller: AbortController | null = null;
+let rafId = 0;
+let io: IntersectionObserver | null = null;
+
 export function initMotion(): void {
+  // Limpieza de la navegación anterior
+  controller?.abort();
+  controller = new AbortController();
+  const { signal } = controller;
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+  io?.disconnect();
+
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ──────────────────────────────────────────────────────────
      Reveal on scroll (IntersectionObserver)
      ────────────────────────────────────────────────────────── */
-  const io = new IntersectionObserver(
+  io = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
           e.target.classList.add('in');
-          io.unobserve(e.target);
+          io?.unobserve(e.target);
         }
       });
     },
     { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
   );
-  document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => io.observe(el));
+  document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => io!.observe(el));
 
   /* ──────────────────────────────────────────────────────────
      Entrada del hero
@@ -62,6 +81,7 @@ export function initMotion(): void {
 
   /* ──────────────────────────────────────────────────────────
      Parallax del hero (pointer + scroll)
+     El loop de rAF se cancela en el siguiente init vía rafId.
      ────────────────────────────────────────────────────────── */
   const pBox = document.querySelector<HTMLElement>('.hero-box');
   const floats = [...document.querySelectorAll<HTMLElement>('.hero-float')];
@@ -71,17 +91,25 @@ export function initMotion(): void {
   let mx = 0, my = 0, tmx = 0, tmy = 0;
 
   if (heroVisual && !reduce) {
-    heroVisual.addEventListener('pointermove', (e) => {
-      const r = heroVisual.getBoundingClientRect();
-      tmx = (e.clientX - r.left) / r.width - 0.5;
-      tmy = (e.clientY - r.top) / r.height - 0.5;
-    });
-    heroVisual.addEventListener('pointerleave', () => {
-      tmx = 0;
-      tmy = 0;
-    });
+    heroVisual.addEventListener(
+      'pointermove',
+      (e) => {
+        const r = heroVisual.getBoundingClientRect();
+        tmx = (e.clientX - r.left) / r.width - 0.5;
+        tmy = (e.clientY - r.top) / r.height - 0.5;
+      },
+      { signal },
+    );
+    heroVisual.addEventListener(
+      'pointerleave',
+      () => {
+        tmx = 0;
+        tmy = 0;
+      },
+      { signal },
+    );
 
-    (function frame() {
+    const frame = () => {
       mx += (tmx - mx) * 0.07;
       my += (tmy - my) * 0.07;
       const sy = window.scrollY;
@@ -93,8 +121,9 @@ export function initMotion(): void {
         const k = (i + 1) * 1.4;
         f.style.transform = `translate(${mx * -26 * k * 0.4}px, ${my * -22 * k * 0.4 - sy * 0.03 * k}px)`;
       });
-      requestAnimationFrame(frame);
-    })();
+      rafId = requestAnimationFrame(frame);
+    };
+    rafId = requestAnimationFrame(frame);
   }
 
   /* ──────────────────────────────────────────────────────────
@@ -102,22 +131,29 @@ export function initMotion(): void {
      ────────────────────────────────────────────────────────── */
   if (!reduce && window.matchMedia('(pointer:fine)').matches) {
     document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
-      card.addEventListener('pointermove', (e) => {
-        const r = card.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width - 0.5;
-        const py = (e.clientY - r.top) / r.height - 0.5;
-        card.style.transform = `perspective(900px) rotateY(${px * 8}deg) rotateX(${py * -8}deg) translateY(-6px)`;
-      });
-      card.addEventListener('pointerleave', () => {
-        card.style.transform = '';
-      });
+      card.addEventListener(
+        'pointermove',
+        (e) => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          card.style.transform = `perspective(900px) rotateY(${px * 8}deg) rotateX(${py * -8}deg) translateY(-6px)`;
+        },
+        { signal },
+      );
+      card.addEventListener(
+        'pointerleave',
+        () => {
+          card.style.transform = '';
+        },
+        { signal },
+      );
     });
   }
 
   /* ──────────────────────────────────────────────────────────
      Toggle menú móvil + estado scrolled del header
-     Re-enlazado aquí porque header/menú se recrean en cada
-     navegación (no tienen transition:persist).
+     Listeners atados al signal → se limpian en la próxima navegación.
      ────────────────────────────────────────────────────────── */
   const header = document.querySelector<HTMLElement>('.site-header');
   const menu = document.querySelector<HTMLElement>('.mobile-menu');
@@ -129,13 +165,13 @@ export function initMotion(): void {
     document.body.style.overflow = open ? 'hidden' : '';
   }
 
-  if (toggle) toggle.addEventListener('click', () => setMenu(true));
-  if (closeBtn) closeBtn.addEventListener('click', () => setMenu(false));
+  if (toggle) toggle.addEventListener('click', () => setMenu(true), { signal });
+  if (closeBtn) closeBtn.addEventListener('click', () => setMenu(false), { signal });
 
   // Estado scrolled del header
   function onScroll() {
     if (header) header.classList.toggle('scrolled', window.scrollY > 24);
   }
-  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('scroll', onScroll, { passive: true, signal });
   onScroll(); // estado inicial
 }
