@@ -1,0 +1,37 @@
+---
+import { NAV } from '../config/site';
+import WaIcon from './WaIcon.astro';
+
+interface Props {
+  page?: string;
+}
+const { page = '' } = Astro.props;
+---
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href="/" class="brand" aria-label="Galletas, hechas con amor">
+      <img src="/assets/logo.png" alt="Logo Galletas" />
+      <span class="brand-name">Galletas<span>Hechas con amor</span></span>
+    </a>
+
+    <nav class="nav">
+      {NAV.map((n) => (
+        <a href={n.href} class={n.key === page ? 'active' : undefined}>
+          {n.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="header-cta">
+      <a class="btn btn-wa" href="/pedir">
+        <WaIcon />
+        <span class="btn-text">Pedir ahora</span>
+      </a>
+      <button class="nav-toggle" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>

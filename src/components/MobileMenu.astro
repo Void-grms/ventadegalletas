@@ -1,0 +1,26 @@
+---
+import { NAV } from '../config/site';
+import WaIcon from './WaIcon.astro';
+
+interface Props {
+  page?: string;
+}
+const { page = '' } = Astro.props;
+---
+<div class="mobile-menu">
+  <button class="mobile-close" aria-label="Cerrar menú">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  </button>
+
+  {NAV.map((n) => (
+    <a href={n.href} class={n.key === page ? 'active' : undefined}>
+      {n.label}
+    </a>
+  ))}
+
+  <a class="btn btn-wa btn-lg" href="/pedir" style="justify-content:center">
+    <WaIcon /> Pedir ahora
+  </a>
+</div>
