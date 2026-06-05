@@ -4,16 +4,17 @@ import type { Box } from '../data/boxes';
 interface Props {
   box: Box;
   ctaHref?: string;
+  class?: string;
 }
 
-const { box, ctaHref = `/pedir?caja=${box.key}` } = Astro.props as { box: Box; ctaHref?: string };
+const { box, ctaHref = `/pedir?caja=${box.key}`, class: className } = Astro.props;
 
 // --accent-soft: versión translúcida del accent (16% de opacidad)
 const accentSoft = `color-mix(in srgb, ${box.accent} 16%, transparent)`;
 ---
 
 <article
-  class:list={["card", { featured: box.featured }]}
+  class:list={["card", { featured: box.featured }, className]}
   style={`--accent:${box.accent};--accent-soft:${accentSoft};--accent-ink:${box.accentDeep}`}
 >
   {box.featured && <span class="ribbon">Más pedida</span>}
