@@ -1,6 +1,46 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOXES } from '../data/boxes';
 ---
-<BaseLayout title="Galletas — Hechas con amor" page="home">
-  <main class="page"><div class="wrap section-pad"><h1>Hero provisional</h1></div></main>
+<BaseLayout
+  title="Galletas — Hechas con amor"
+  description="Galletas artesanales hechas con amor. Vainilla y chocolate, en tres presentaciones. Pide por WhatsApp."
+  page="home"
+>
+  <main class="page page-center hero" id="top">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Galletas · Hechas con amor</span>
+        <h1 style="margin-top:18px">Galletas artesanales
+          <span class="ul">hechas con amor
+            <svg viewBox="0 0 300 12" preserveAspectRatio="none"><path d="M3 8 C 70 2, 150 2, 297 6"/></svg>
+          </span>
+        </h1>
+        <p class="lead">Vainilla y chocolate, recién horneadas con ingredientes de verdad. Elige tu caja y pídela en un minuto.</p>
+        <div class="hero-actions">
+          <a class="btn btn-lg" href="/cajas">Ver las cajas</a>
+          <a class="btn btn-ghost btn-lg" href="/pedir">Hacer un pedido</a>
+        </div>
+        <div class="hero-pricelist">
+          {BOXES.map((box) => (
+            <a href="/cajas">
+              <span class="pdot" style={`background:${box.accent}`}></span>
+              <b>S/{box.price}</b>
+              <span>{box.name.replace('Caja ', '')}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-plate"></div>
+        <img class="hero-box" src="/assets/box-mediana.png" alt="Caja de galletas Galletas hechas con amor" />
+        <div class="hero-float f2">
+          <span class="dot" style="background:#1FA855"></span>
+          Pide por WhatsApp
+          <small>respuesta rápida</small>
+        </div>
+      </div>
+    </div>
+  </main>
 </BaseLayout>
