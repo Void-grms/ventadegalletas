@@ -3,12 +3,13 @@ interface Props {
   num: number | string;
   title: string;
   text: string;
+  class?: string;
 }
 
-const { num, title, text } = Astro.props;
+const { num, title, text, class: className } = Astro.props;
 ---
 
-<div class="step">
+<div class:list={["step", className]}>
   <div class="num">{num}</div>
   <div class="step-ic">
     <slot />
