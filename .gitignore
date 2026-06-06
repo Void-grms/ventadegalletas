@@ -1,6 +1,12 @@
 # Dependencias
 node_modules/
 
+# package-lock.json no se versiona: el lock generado en Windows no incluye las
+# bundleDependencies opcionales multiplataforma (@emnapi/*) de
+# @tailwindcss/oxide-wasm32-wasi, y eso rompe `npm ci` en Linux (Railway).
+# Sin lock en el repo, Railway/railpack usa `npm install`, que resuelve bien.
+package-lock.json
+
 # Salidas de build (Astro)
 dist/
 .astro/
