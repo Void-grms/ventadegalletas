@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OrderForm from '../components/OrderForm.astro';
+---
+
+<BaseLayout
+  title="Hacer un pedido — Galletas"
+  description="Arma tu caja de galletas y envíala por WhatsApp en un minuto."
+  page="pedir"
+>
+  <main class="page page-pad order">
+    <div class="wrap">
+      <OrderForm />
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initOrderForm } from '../scripts/orderForm';
+  document.addEventListener('astro:page-load', () => initOrderForm());
+</script>

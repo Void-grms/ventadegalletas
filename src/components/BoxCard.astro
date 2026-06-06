@@ -1,0 +1,47 @@
+---
+import type { Box } from '../data/boxes';
+
+interface Props {
+  box: Box;
+  ctaHref?: string;
+  class?: string;
+}
+
+const { box, ctaHref = `/pedir?caja=${box.key}`, class: className } = Astro.props;
+
+// --accent-soft: versión translúcida del accent (16% de opacidad)
+const accentSoft = `color-mix(in srgb, ${box.accent} 16%, transparent)`;
+---
+
+<article
+  class:list={["card", { featured: box.featured }, className]}
+  style={`--accent:${box.accent};--accent-soft:${accentSoft};--accent-ink:${box.accentDeep}`}
+>
+  {box.featured && <span class="ribbon">Más pedida</span>}
+  <span class="card-glow"></span>
+  <div class="card-media">
+    <span class="halo"></span>
+    <img src={box.img} alt={`${box.name} de galletas`} />
+  </div>
+  <div class="card-tier">
+    <span class="tier-dot"></span>
+    <h3>{box.name}</h3>
+  </div>
+  <p class="card-sub">{box.sub}</p>
+  <div class="price-row">
+    <span class="price"><span class="cur">S/</span>{box.price}</span>
+    <span class="price-unit">por caja</span>
+  </div>
+  <span class="count-pill">🍪 {box.cookies} galletas</span>
+  <ul class="feat">
+    {box.features.map((f) => (
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+        {f}
+      </li>
+    ))}
+  </ul>
+  <a class="btn btn-pick" href={ctaHref}>Pedir la {box.name.replace('Caja ', '')}</a>
+</article>

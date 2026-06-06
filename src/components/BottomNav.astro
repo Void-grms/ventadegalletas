@@ -1,0 +1,94 @@
+---
+/**
+ * BottomNav.astro — Barra de navegación inferior flotante ("dock") premium.
+ * Reemplaza al Header superior y al FAB de WhatsApp.
+ *
+ * Estructura: 2 ítems · LOGO central elevado (→ inicio) · 2 ítems.
+ * El primer ítem ("Pedir") conserva la identidad de WhatsApp (icono + verde).
+ *
+ * El estado activo se renderiza en el servidor con `page` y, como el dock
+ * usa `transition:persist` (no se re-monta entre navegaciones del
+ * ClientRouter), se reajusta en cliente desde motion.ts según el pathname.
+ */
+import WaIcon from './WaIcon.astro';
+
+interface Props {
+  page?: string;
+}
+const { page = '' } = Astro.props;
+
+const left = [
+  { key: 'pedir', label: 'Pedir', href: '/pedir', icon: 'wa', cta: true },
+  { key: 'cajas', label: 'Cajas', href: '/cajas', icon: 'box', cta: false },
+] as const;
+
+const right = [
+  { key: 'nosotros', label: 'Nosotros', href: '/nosotros', icon: 'heart' },
+  { key: 'como', label: 'Cómo', href: '/como-pedir', icon: 'help' },
+] as const;
+---
+<nav class="dock" aria-label="Navegación principal" transition:persist>
+  <div class="dock-bar">
+    <div class="dock-side">
+      {left.map((n) => (
+        <a
+          href={n.href}
+          data-path={n.href}
+          class:list={['dock-item', { 'dock-cta': n.cta, 'is-active': n.key === page }]}
+          aria-label={n.label}
+          aria-current={n.key === page ? 'page' : undefined}
+        >
+          <span class="dock-ic">
+            {n.icon === 'wa' && <WaIcon />}
+            {n.icon === 'box' && (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8.3 12 4l9 4.3-9 4.3-9-4.3Z" />
+                <path d="M3 8.3V16l9 4.3 9-4.3V8.3" />
+                <path d="M12 12.6v7.7" />
+              </svg>
+            )}
+          </span>
+          <span class="dock-label">{n.label}</span>
+        </a>
+      ))}
+    </div>
+
+    <a
+      href="/"
+      data-path="/"
+      class:list={['dock-logo', { 'is-active': page === 'home' }]}
+      aria-label="Inicio — Galletas"
+      aria-current={page === 'home' ? 'page' : undefined}
+    >
+      <img src="/assets/logo.png" alt="Galletas, hechas con amor" />
+    </a>
+
+    <div class="dock-side dock-side--right">
+      {right.map((n) => (
+        <a
+          href={n.href}
+          data-path={n.href}
+          class:list={['dock-item', { 'is-active': n.key === page }]}
+          aria-label={n.label}
+          aria-current={n.key === page ? 'page' : undefined}
+        >
+          <span class="dock-ic">
+            {n.icon === 'heart' && (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20.4C6.9 16.7 3.5 13.7 3.5 9.8 3.5 7.4 5.4 5.5 7.8 5.5c1.5 0 2.9.8 3.7 2 .8-1.2 2.2-2 3.7-2 2.4 0 4.3 1.9 4.3 4.3 0 3.9-3.4 6.9-8.5 10.6Z" />
+              </svg>
+            )}
+            {n.icon === 'help' && (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M9.3 9.3a2.8 2.8 0 0 1 5.3 1.2c0 1.8-2.7 2-2.7 3.6" />
+                <path d="M12 17.3h.01" />
+              </svg>
+            )}
+          </span>
+          <span class="dock-label">{n.label}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>

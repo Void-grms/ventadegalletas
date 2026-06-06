@@ -1,0 +1,30 @@
+{
+  "name": "galletas",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "astro preview --host",
+    "check": "astro check",
+    "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "astro": "^6.4.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@tailwindcss/vite": "^4.3.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.8"
+  },
+  "overrides": {
+    "yaml": "^2.9.0",
+    "vite": "7.3.5"
+  }
+}
