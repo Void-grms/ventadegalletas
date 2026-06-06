@@ -8,6 +8,12 @@ export default defineConfig({
     port: Number(process.env.PORT) || 4321,
   },
   vite: {
+    // El servidor `preview` de Vite bloquea hosts desconocidos (anti DNS-rebinding).
+    // Solo servimos archivos estáticos de dist/, así que permitimos cualquier host
+    // para que funcione tras el dominio de Railway (o un dominio propio).
+    preview: {
+      allowedHosts: true,
+    },
     plugins: [tailwindcss()],
   },
 });
