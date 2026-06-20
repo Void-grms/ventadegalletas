@@ -1,9 +1,9 @@
-export type BoxKey = "pequena" | "mediana" | "grande";
+export type BoxKey = "caja";
 
 export interface Box {
   key: BoxKey;
   name: string;
-  price: number;   // soles
+  price: number;   // soles (precio de 1 caja)
   cookies: number;
   accent: string;
   accentDeep: string;
@@ -13,29 +13,25 @@ export interface Box {
   img: string;      // ruta en /public
 }
 
+// Precios: 1 caja S/6 · promo 2 cajas S/10
+export const PRICING = {
+  unit: 6,   // S/ por 1 caja
+  pair: 10,  // S/ por 2 cajas (promo)
+} as const;
+
 export const BOXES: Box[] = [
   {
-    key: "pequena", name: "Caja Pequeña", price: 3, cookies: 4,
-    accent: "#C97E78", accentDeep: "#B5645E", featured: false,
-    sub: "Para un antojo o un detalle bonito.",
-    features: ["4 galletas artesanales", "Ideal para antojos o detalles pequeños", "Perfecta para regalar"],
-    img: "/assets/box-pequena.png",
-  },
-  {
-    key: "mediana", name: "Caja Mediana", price: 5, cookies: 8,
+    key: "caja", name: "Caja de galletas", price: PRICING.unit, cookies: 6,
     accent: "#CC8A3C", accentDeep: "#B5752A", featured: true,
-    sub: "El equilibrio perfecto entre cantidad y precio.",
-    features: ["8 galletas artesanales", "Perfecta para compartir en pareja o familia", "Equilibrio entre cantidad y precio"],
+    sub: "6 galletas artesanales, recién horneadas con amor.",
+    features: [
+      "6 galletas artesanales",
+      "Vainilla, chocolate o mixto",
+      "Promo: 2 cajas por S/10",
+    ],
     img: "/assets/box-mediana.png",
-  },
-  {
-    key: "grande", name: "Caja Grande", price: 8, cookies: 14,
-    accent: "#87894C", accentDeep: "#6F7140", featured: false,
-    sub: "La mejor opción para compartir en grande.",
-    features: ["14 galletas artesanales", "La mejor opción para compartir en grande", "Ideal para reuniones, cumpleaños o regalar"],
-    img: "/assets/box-grande.png",
   },
 ];
 
-export const getBox = (key: string): Box =>
-  BOXES.find(b => b.key === key) ?? BOXES[1]; // default: mediana
+// Solo hay una caja: getBox siempre devuelve la única presentación.
+export const getBox = (_key?: string): Box => BOXES[0];

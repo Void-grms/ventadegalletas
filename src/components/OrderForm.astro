@@ -1,6 +1,8 @@
 ---
-import { BOXES } from '../data/boxes';
-import { WA_DISPLAY } from '../config/site';
+import { getBox, PRICING } from '../data/boxes';
+import { WA_DISPLAY, DELIVERY } from '../config/site';
+
+const box = getBox();
 ---
 
 <div class="order-card-wrap reveal">
@@ -59,24 +61,20 @@ import { WA_DISPLAY } from '../config/site';
 
     <!-- ───────── PASO 1 · Tu caja ───────── -->
     <section class="step-panel" data-panel="1">
-      <h3 class="step-title">Elige tu caja</h3>
+      <h3 class="step-title">Tu caja y sabor</h3>
 
       <div class="field">
-        <label>Presentación <span class="req">*</span></label>
-        <div class="choice-grid">
-          {BOXES.map((box) => (
-            <label class="choice" data-box={box.key}>
-              <input type="radio" name="caja" value={box.key} />
-              <span class="tick">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>
-              <span class="c-name">{box.name.replace('Caja ', '')}</span>
-              <span class="c-meta">{box.cookies} galletas</span>
-              <span class="c-price">S/{box.price}</span>
-            </label>
-          ))}
+        <label>La caja</label>
+        <div class="single-box">
+          <img src={box.img} alt="Caja de galletas" />
+          <div class="single-box-info">
+            <strong>{box.name}</strong>
+            <span>{box.cookies} galletas artesanales</span>
+          </div>
+        </div>
+        <div class="promo-note">
+          <span class="promo-pill">1 caja <b>S/{PRICING.unit}</b></span>
+          <span class="promo-pill promo-hot">2 cajas <b>S/{PRICING.pair}</b></span>
         </div>
       </div>
 
@@ -112,7 +110,7 @@ import { WA_DISPLAY } from '../config/site';
           <span class="lbl">Total estimado</span>
           <div id="count-note" class="summary-note"></div>
         </div>
-        <span class="tot" id="total"><span class="cur">S/</span>5</span>
+        <span class="tot" id="total"><span class="cur">S/</span>{PRICING.unit}</span>
       </div>
 
       <div class="step-nav">
@@ -148,8 +146,14 @@ import { WA_DISPLAY } from '../config/site';
       </div>
 
       <div class="field">
-        <label for="fecha">Fecha deseada <span class="opt">(opcional)</span></label>
-        <input id="fecha" name="fecha" type="date" class="input" />
+        <label>Fecha de entrega</label>
+        <div class="delivery-fixed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+          <div>
+            <strong>{DELIVERY.label}</strong>
+            <span>{DELIVERY.note}</span>
+          </div>
+        </div>
       </div>
 
       <div class="field">
@@ -192,3 +196,57 @@ import { WA_DISPLAY } from '../config/site';
 
   </form>
 </div>
+
+<style>
+  /* Caja única + promo (paso 1) */
+  .single-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--accent-ink, #B5752A) 22%, transparent);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--accent-ink, #B5752A) 6%, transparent);
+  }
+  .single-box img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    flex: none;
+  }
+  .single-box-info { display: flex; flex-direction: column; gap: 2px; }
+  .single-box-info strong { font-size: 1.05rem; }
+  .single-box-info span { font-size: .9rem; opacity: .7; }
+
+  .promo-note { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .promo-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--accent-ink, #B5752A) 26%, transparent);
+    font-size: .95rem;
+  }
+  .promo-pill b { font-size: 1.1rem; }
+  .promo-hot {
+    background: var(--accent-ink, #B5752A);
+    border-color: var(--accent-ink, #B5752A);
+    color: #fff;
+  }
+
+  /* Fecha de entrega fija (paso 2) */
+  .delivery-fixed {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--accent-ink, #B5752A) 22%, transparent);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--accent-ink, #B5752A) 6%, transparent);
+  }
+  .delivery-fixed svg { width: 26px; height: 26px; color: var(--accent-ink, #B5752A); flex: none; }
+  .delivery-fixed div { display: flex; flex-direction: column; gap: 2px; }
+  .delivery-fixed strong { text-transform: capitalize; }
+  .delivery-fixed span { font-size: .9rem; opacity: .7; }
+</style>

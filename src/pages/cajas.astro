@@ -1,19 +1,25 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BoxCard from '../components/BoxCard.astro';
-import { BOXES } from '../data/boxes';
+import { BOXES, PRICING } from '../data/boxes';
+import { DELIVERY } from '../config/site';
 ---
-<BaseLayout title="Las cajas — Galletas" description="Tres presentaciones: Pequeña (S/3), Mediana (S/5) y Grande (S/8)." page="cajas">
+<BaseLayout title="La caja — Galletas" description={`Caja de 6 galletas a S/${PRICING.unit}. Promo: 2 cajas por S/${PRICING.pair}.`} page="cajas">
   <main class="page page-pad cajas">
     <div class="wrap">
       <div class="page-head reveal">
-        <span class="eyebrow">Las presentaciones</span>
-        <h1>Elige tu caja perfecta</h1>
-        <p>Tres tamaños para cada antojo — desde un detalle pequeño hasta una caja para compartir en grande.</p>
+        <span class="eyebrow">La caja</span>
+        <h1>Una caja, hecha con amor</h1>
+        <p>6 galletas artesanales por caja. <strong>1 caja a S/{PRICING.unit}</strong> o <strong>2 cajas por S/{PRICING.pair}</strong>. Entrega el {DELIVERY.label}.</p>
       </div>
-      <div class="cards">
-        {BOXES.map((box, i) => <BoxCard box={box} class={`reveal${i > 0 ? ` d${i}` : ''}`} />)}
+      <div class="cards cards-single">
+        {BOXES.map((box) => <BoxCard box={box} class="reveal" />)}
       </div>
     </div>
   </main>
 </BaseLayout>
+
+<style>
+  .cards-single { justify-content: center; }
+  .cards-single :global(.card) { max-width: 380px; }
+</style>

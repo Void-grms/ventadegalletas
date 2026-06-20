@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BOXES } from '../data/boxes';
+import { PRICING } from '../data/boxes';
+import { DELIVERY } from '../config/site';
 ---
 <BaseLayout
   title="Galletas — Hechas con amor"
-  description="Galletas artesanales hechas con amor. Vainilla y chocolate, en tres presentaciones. Pide por WhatsApp."
+  description={`Galletas artesanales hechas con amor. Caja de 6 galletas a S/${PRICING.unit}, o 2 cajas por S/${PRICING.pair}. Pide por WhatsApp.`}
   page="home"
 >
   <main class="page page-center hero" id="top">
@@ -22,28 +23,26 @@ import { BOXES } from '../data/boxes';
         <div class="hero-plate"></div>
         <img class="hero-box" src="/assets/box-mediana.png" alt="Caja de galletas Galletas hechas con amor" />
 
-        {BOXES.map((box, i) => (
-          <a
-            class:list={['hero-price', `hp-${i}`]}
-            href="/cajas"
-            style={`--accent:${box.accent}`}
-            aria-label={`${box.name}: S/${box.price}`}
-          >
-            <span class="hp-dot"></span>
-            <b>S/{box.price}</b>
-            <span class="hp-name">{box.name.replace('Caja ', '')}</span>
-          </a>
-        ))}
+        <a class="hero-price hp-0" href="/cajas" style="--accent:#CC8A3C" aria-label={`1 caja: S/${PRICING.unit}`}>
+          <span class="hp-dot"></span>
+          <b>S/{PRICING.unit}</b>
+          <span class="hp-name">1 caja</span>
+        </a>
+        <a class="hero-price hp-1" href="/cajas" style="--accent:#87894C" aria-label={`2 cajas: S/${PRICING.pair}`}>
+          <span class="hp-dot"></span>
+          <b>S/{PRICING.pair}</b>
+          <span class="hp-name">2 cajas</span>
+        </a>
 
         <div class="hero-float f2">
           <span class="dot" style="background:#1FA855"></span>
-          Pide por WhatsApp
-          <small>respuesta rápida</small>
+          Entrega el 24
+          <small>{DELIVERY.note}</small>
         </div>
       </div>
 
       <div class="hero-body">
-        <p class="lead">Vainilla y chocolate, recién horneadas con ingredientes de verdad. Elige tu caja y pídela en un minuto.</p>
+        <p class="lead">Vainilla y chocolate, recién horneadas con ingredientes de verdad. Una caja de 6 galletas a S/{PRICING.unit}, o 2 cajas por S/{PRICING.pair}. Entrega el {DELIVERY.label}.</p>
         <div class="hero-actions">
           <a class="btn btn-lg" href="/cajas">Ver las cajas</a>
           <a class="btn btn-ghost btn-lg" href="/pedir">Hacer un pedido</a>

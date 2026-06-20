@@ -1,4 +1,6 @@
 import type { Box } from '../data/boxes';
+import { PRICING } from '../data/boxes';
+import { DELIVERY } from '../config/site';
 
 export type Flavor = 'vainilla' | 'chocolate' | 'mixto';
 
@@ -20,8 +22,13 @@ export function clampQty(v: number | string): number {
   return n;
 }
 
-export function calcTotal(price: number, qty: number | string): number {
-  return price * clampQty(qty);
+// Precio escalonado: cada 2 cajas cuestan S/10 (promo) y la caja impar S/6.
+// Ej: 1→6, 2→10, 3→16, 4→20, 5→26.
+export function calcTotal(qty: number | string): number {
+  const n = clampQty(qty);
+  const pairs = Math.floor(n / 2);
+  const singles = n % 2;
+  return pairs * PRICING.pair + singles * PRICING.unit;
 }
 
 export const FLAVOR_LABEL: Record<Flavor, string> = {
@@ -37,19 +44,19 @@ export function formatDateEs(dateStr: string): string {
 
 export function buildOrderMessage(o: OrderInput): string {
   const q = clampQty(o.qty);
-  const total = o.box.price * q;
+  const total = calcTotal(q);
   const L: string[] = [];
   L.push('¡Hola Galletas! 🍪 Quiero hacer un pedido:');
   L.push('');
-  L.push(`*Presentación:* ${o.box.name} (${o.box.cookies} galletas) — S/${o.box.price} c/u`);
+  L.push(`*Producto:* ${o.box.name} (${o.box.cookies} galletas c/u)`);
   L.push(`*Cantidad:* ${q} ${q === 1 ? 'caja' : 'cajas'}`);
   L.push(`*Sabor:* ${FLAVOR_LABEL[o.flavor]}`);
-  L.push(`*Total:* S/${total}`);
+  L.push(`*Total:* S/${total}  (1 caja S/${PRICING.unit} · 2 cajas S/${PRICING.pair})`);
   L.push('');
   L.push(`*Nombre:* ${o.name}`);
   L.push(`*Teléfono:* ${o.phone}`);
   L.push(`*Entrega / distrito:* ${o.district}`);
-  if (o.date) L.push(`*Fecha deseada:* ${formatDateEs(o.date)}`);
+  L.push(`*Fecha de entrega:* ${DELIVERY.label}`);
   if (o.notes) L.push(`*Notas:* ${o.notes}`);
   L.push('');
   L.push('_Enviado desde la web · Hechas con amor_ ❤️');

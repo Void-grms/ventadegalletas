@@ -1,7 +1,7 @@
-import { clampQty, calcTotal, buildWhatsAppUrl, FLAVOR_LABEL, formatDateEs } from './orderLogic';
+import { clampQty, calcTotal, buildWhatsAppUrl, FLAVOR_LABEL } from './orderLogic';
 import type { Flavor, OrderInput } from './orderLogic';
 import { getBox } from '../data/boxes';
-import { WA_NUMBER } from '../config/site';
+import { WA_NUMBER, DELIVERY } from '../config/site';
 
 export function initOrderForm(): void {
   const form = document.querySelector<HTMLFormElement>('#order-form');
@@ -11,41 +11,20 @@ export function initOrderForm(): void {
   if (form.dataset.initialized === '1') return;
   form.dataset.initialized = '1';
 
-  const choices = [...form.querySelectorAll<HTMLElement>('.choice[data-box]')];
+  const box = getBox();              // solo hay una caja
   const qtyInput = form.querySelector<HTMLInputElement>('#qty')!;
   const totalEl = form.querySelector<HTMLElement>('#total');
   const countNote = form.querySelector<HTMLElement>('#count-note');
 
-  let selectedKey = 'mediana';
   let flavor: Flavor = 'mixto';
 
-  // ── Selección de caja ──────────────────────────────────────────────────────
-  function selectBox(key: string): void {
-    const box = getBox(key);
-    selectedKey = box.key;
-
-    choices.forEach((c) => {
-      const isSelected = c.dataset.box === selectedKey;
-      c.classList.toggle('sel', isSelected);
-      const radio = c.querySelector<HTMLInputElement>('input');
-      if (radio) radio.checked = isSelected;
-      if (isSelected) {
-        form!.style.setProperty('--accent-ink', box.accent);
-      }
-    });
-
-    updateTotal();
-  }
-
-  choices.forEach((c) => {
-    c.addEventListener('click', () => selectBox(c.dataset.box ?? 'mediana'));
-  });
+  // Acento del formulario (antes lo fijaba la caja seleccionada)
+  form.style.setProperty('--accent-ink', box.accent);
 
   // ── Cantidad ───────────────────────────────────────────────────────────────
   function updateTotal(): void {
-    const box = getBox(selectedKey);
     const q = clampQty(qtyInput.value);
-    const total = calcTotal(box.price, q);
+    const total = calcTotal(q);
 
     if (totalEl) {
       totalEl.innerHTML = `<span class="cur">S/</span>${total}`;
@@ -150,19 +129,18 @@ export function initOrderForm(): void {
     const review = form!.querySelector<HTMLElement>('#review');
     if (!review) return;
 
-    const box = getBox(selectedKey);
     const q = clampQty(qtyInput.value);
-    const total = box.price * q;
+    const total = calcTotal(q);
 
     const rows: [string, string][] = [
-      ['Caja', `${box.name.replace('Caja ', '')} · ${box.cookies} galletas`],
+      ['Producto', `${box.name} · ${box.cookies} galletas`],
       ['Sabor', FLAVOR_LABEL[flavor]],
       ['Cantidad', `${q} ${q === 1 ? 'caja' : 'cajas'}`],
+      ['Fecha de entrega', DELIVERY.label],
       ['A nombre de', val('nombre')],
       ['Teléfono', val('telefono')],
-      ['Entrega', val('entrega')],
+      ['Zona', val('entrega')],
     ];
-    if (val('fecha')) rows.push(['Fecha', formatDateEs(val('fecha'))]);
     if (val('notas')) rows.push(['Notas', val('notas')]);
 
     review.replaceChildren();
@@ -207,9 +185,7 @@ export function initOrderForm(): void {
       return;
     }
 
-    const box = getBox(selectedKey);
     const qty = clampQty(qtyInput.value);
-    const fecha = val('fecha');
     const notas = val('notas');
 
     const order: OrderInput = {
@@ -219,7 +195,7 @@ export function initOrderForm(): void {
       name: val('nombre'),
       phone: val('telefono'),
       district: val('entrega'),
-      ...(fecha ? { date: fecha } : {}),
+      date: DELIVERY.date,
       ...(notas ? { notes: notas } : {}),
     };
 
@@ -237,8 +213,7 @@ export function initOrderForm(): void {
     window.open(url, '_blank');
   });
 
-  // ── Preselección por ?caja= ────────────────────────────────────────────────
-  const params = new URLSearchParams(location.search);
-  selectBox(params.get('caja') ?? 'mediana');
+  // Estado inicial
+  updateTotal();
   showStep(MIN_STEP, false);
 }
