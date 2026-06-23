@@ -26,7 +26,7 @@ export const BOXES: Box[] = [
     sub: "6 galletas artesanales, recién horneadas con amor.",
     features: [
       "6 galletas artesanales",
-      "Vainilla, chocolate o mixto",
+      "Surtidas: chocochips, chocolate, red velvet y coco",
       "Promo: 2 cajas por S/10",
     ],
     img: "/assets/box-mediana.png",

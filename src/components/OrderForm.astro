@@ -1,6 +1,7 @@
 ---
 import { getBox, PRICING } from '../data/boxes';
 import { WA_DISPLAY, DELIVERY } from '../config/site';
+import { ASSORTED_FLAVORS, SELLERS } from '../scripts/orderLogic';
 
 const box = getBox();
 ---
@@ -61,7 +62,7 @@ const box = getBox();
 
     <!-- ───────── PASO 1 · Tu caja ───────── -->
     <section class="step-panel" data-panel="1">
-      <h3 class="step-title">Tu caja y sabor</h3>
+      <h3 class="step-title">Tu caja</h3>
 
       <div class="field">
         <label>La caja</label>
@@ -79,20 +80,10 @@ const box = getBox();
       </div>
 
       <div class="field">
-        <label>Sabor <span class="req">*</span></label>
-        <div class="flavor-grid">
-          <label class="flavor choice" data-flavor="vainilla">
-            <input type="radio" name="sabor" />
-            <span class="c-name">Vainilla</span>
-          </label>
-          <label class="flavor choice" data-flavor="chocolate">
-            <input type="radio" name="sabor" />
-            <span class="c-name">Chocolate</span>
-          </label>
-          <label class="flavor choice sel" data-flavor="mixto">
-            <input type="radio" name="sabor" checked />
-            <span class="c-name">Mixto</span>
-          </label>
+        <label>Sabores</label>
+        <div class="assorted">
+          <strong>Caja surtida 🍪</strong>
+          <p>Cada caja viene con los 4 sabores: {ASSORTED_FLAVORS.join(', ')}.</p>
         </div>
       </div>
 
@@ -157,8 +148,16 @@ const box = getBox();
       </div>
 
       <div class="field">
-        <label for="notas">Notas para tu pedido <span class="opt">(opcional)</span></label>
-        <textarea id="notas" name="notas" class="textarea" placeholder="¿Es para regalo? ¿Alguna preferencia especial?"></textarea>
+        <label>¿A quién le haces el pedido? <span class="req">*</span></label>
+        <div class="choice-grid seller-grid">
+          {SELLERS.map((s, i) => (
+            <label class={`choice seller${i === 0 ? ' sel' : ''}`} data-seller={s.name}>
+              <input type="radio" name="vendedor" checked={i === 0} />
+              <span class="c-name">{s.name}</span>
+              <span class="c-meta">{s.phone.replace(/^51/, '')}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       <div class="step-nav">
@@ -198,6 +197,19 @@ const box = getBox();
 </div>
 
 <style>
+  /* Caja surtida: sabores fijos (paso 1) */
+  .assorted {
+    padding: 14px 16px;
+    border: 1px solid color-mix(in srgb, var(--accent-ink, #B5752A) 22%, transparent);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--accent-ink, #B5752A) 6%, transparent);
+  }
+  .assorted strong { display: block; font-size: 1.05rem; }
+  .assorted p { margin: 4px 0 0; font-size: .92rem; opacity: .75; }
+
+  /* Selector de vendedor (paso 2): 4 opciones en grilla 2×2 */
+  .seller-grid { grid-template-columns: repeat(2, 1fr); }
+
   /* Caja única + promo (paso 1) */
   .single-box {
     display: flex;

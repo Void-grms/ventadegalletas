@@ -1,7 +1,7 @@
-import { clampQty, calcTotal, buildWhatsAppUrl, FLAVOR_LABEL } from './orderLogic';
-import type { Flavor, OrderInput } from './orderLogic';
+import { clampQty, calcTotal, buildWhatsAppUrl, sendOrderToSheet, SELLERS, ASSORTED_LABEL } from './orderLogic';
+import type { Seller, OrderInput } from './orderLogic';
 import { getBox } from '../data/boxes';
-import { WA_NUMBER, DELIVERY } from '../config/site';
+import { DELIVERY, SHEET_ENDPOINT } from '../config/site';
 
 export function initOrderForm(): void {
   const form = document.querySelector<HTMLFormElement>('#order-form');
@@ -16,7 +16,7 @@ export function initOrderForm(): void {
   const totalEl = form.querySelector<HTMLElement>('#total');
   const countNote = form.querySelector<HTMLElement>('#count-note');
 
-  let flavor: Flavor = 'mixto';
+  let seller: Seller = SELLERS[0];
 
   // Acento del formulario (antes lo fijaba la caja seleccionada)
   form.style.setProperty('--accent-ink', box.accent);
@@ -48,15 +48,15 @@ export function initOrderForm(): void {
     updateTotal();
   });
 
-  // ── Sabor ──────────────────────────────────────────────────────────────────
-  const flavorEls = [...form.querySelectorAll<HTMLElement>('.flavor')];
-  flavorEls.forEach((f) => {
-    f.addEventListener('click', () => {
-      flavor = (f.dataset.flavor ?? 'mixto') as Flavor;
-      flavorEls.forEach((x) => {
-        x.classList.toggle('sel', x === f);
+  // ── Vendedor (a quién se le hace el pedido) ─────────────────────────────────
+  const sellerEls = [...form.querySelectorAll<HTMLElement>('.seller')];
+  sellerEls.forEach((s) => {
+    s.addEventListener('click', () => {
+      seller = SELLERS.find((v) => v.name === s.dataset.seller) ?? SELLERS[0];
+      sellerEls.forEach((x) => {
+        x.classList.toggle('sel', x === s);
         const radio = x.querySelector<HTMLInputElement>('input');
-        if (radio) radio.checked = x === f;
+        if (radio) radio.checked = x === s;
       });
     });
   });
@@ -134,14 +134,14 @@ export function initOrderForm(): void {
 
     const rows: [string, string][] = [
       ['Producto', `${box.name} · ${box.cookies} galletas`],
-      ['Sabor', FLAVOR_LABEL[flavor]],
+      ['Sabor', ASSORTED_LABEL],
       ['Cantidad', `${q} ${q === 1 ? 'caja' : 'cajas'}`],
+      ['Pedido para', seller.name],
       ['Fecha de entrega', DELIVERY.label],
       ['A nombre de', val('nombre')],
       ['Teléfono', val('telefono')],
       ['Zona', val('entrega')],
     ];
-    if (val('notas')) rows.push(['Notas', val('notas')]);
 
     review.replaceChildren();
     rows.forEach(([k, v]) => {
@@ -186,20 +186,21 @@ export function initOrderForm(): void {
     }
 
     const qty = clampQty(qtyInput.value);
-    const notas = val('notas');
 
     const order: OrderInput = {
       box,
       qty,
-      flavor,
+      seller,
       name: val('nombre'),
       phone: val('telefono'),
       district: val('entrega'),
       date: DELIVERY.date,
-      ...(notas ? { notes: notas } : {}),
     };
 
-    const url = buildWhatsAppUrl(WA_NUMBER, order);
+    // Registra el pedido en Google Sheets (no bloquea: si falla, igual se abre WhatsApp).
+    sendOrderToSheet(SHEET_ENDPOINT, order);
+
+    const url = buildWhatsAppUrl(order);
 
     // Pequeña animación de confirmación en el botón
     const submitBtn = form.querySelector<HTMLButtonElement>('button[type=submit]');
